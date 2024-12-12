@@ -1,7 +1,10 @@
 package com.oztasibrahimomer.weatherapp.presentation
 
+import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,12 +37,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
+import coil3.compose.rememberAsyncImagePainter
 import com.oztasibrahimomer.weatherapp.data.dto.WeatherDTO
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -120,11 +127,6 @@ fun WeatherScreen(
             }
 
 
-
-
-
-
-
         }
 
 
@@ -135,6 +137,8 @@ fun WeatherScreen(
 
 @Composable
 fun WeatherDetail(data:WeatherDTO) {
+
+    val context= LocalContext.current
 
     Column(
         modifier = Modifier
@@ -176,21 +180,53 @@ fun WeatherDetail(data:WeatherDTO) {
         
         Spacer(modifier = Modifier.height(25.dp))
         
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ){
             
-            AsyncImage(
-                model = "https:"+data.current.condition.icon,
-                contentDescription ="" ,
-                modifier = Modifier.border(2.dp,color=Color.Blue)
+            Image(
+                painter = rememberAsyncImagePainter(model = "https:${data.current.condition.icon}".replace("64x64","128x128")),
+                contentDescription ="",
+                modifier = Modifier.size(100.dp,100.dp)
+            )
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            Text(
+                text = data.current.condition.text,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                color = Color.Gray
             )
 
 
+        }
+
+        Row(
+            modifier= Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+            horizontalArrangement = Arrangement.Center
+        ){
+
+            Card(
+                modifier= Modifier
+                    .fillMaxWidth()
+                    .height(360.dp),
+                colors = CardDefaults.cardColors(Color.Gray),
+                shape = RoundedCornerShape(10.dp)
+            ){
+
+
+            }
 
         }
+
 
     }
 
