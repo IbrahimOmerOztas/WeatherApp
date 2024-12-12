@@ -36,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +51,7 @@ import com.oztasibrahimomer.weatherapp.data.dto.WeatherDTO
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeatherScreen(
+    hint:String="",
     viewModel: WeatherViewModel= hiltViewModel()
 ) {
 
@@ -59,7 +61,11 @@ fun WeatherScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xFFC5F7C7))
+            .background(
+                brush = Brush.linearGradient(
+                    colors = listOf(Color(0xFF189FB1), Color(0xFF24C42B))
+                )
+            )
     )
     {
 
@@ -69,7 +75,7 @@ fun WeatherScreen(
             TextField(
                 value = textTf,
                 onValueChange = {textTf=it},
-                label = { Text(text = "City", fontSize = 13.sp, fontWeight = FontWeight.SemiBold,color=Color.DarkGray)},
+                placeholder = {Text(text = "City", fontSize = 13.sp, fontWeight = FontWeight.SemiBold,color=Color.Gray)},
                 trailingIcon = {
                     IconButton(onClick = {
                         viewModel.onEvent(Event.GetStringWeather(textTf))
@@ -84,7 +90,7 @@ fun WeatherScreen(
                 shape = RoundedCornerShape(12.dp),
                 colors = TextFieldDefaults.textFieldColors(
                     textColor = Color.Black,
-                    containerColor = Color(0xFFA9ECF5)
+                    containerColor = Color(0xFFCCD0D1)
 
 
                 ),
@@ -100,8 +106,7 @@ fun WeatherScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 10.dp, top = 130.dp, end = 10.dp, bottom = 20.dp)
-                .border(3.dp, color = Color.Red),
+                .padding(start = 10.dp, top = 130.dp, end = 10.dp, bottom = 20.dp),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ){
@@ -161,7 +166,7 @@ fun WeatherDetail(data:WeatherDTO) {
 
             Text(text = data.location.name, fontSize = 30.sp)
             Spacer(modifier = Modifier.width(3.dp))
-            Text(text = data.location.country, fontSize = 18.sp, color = Color.Gray)
+            Text(text = data.location.country, fontSize = 18.sp, color = Color.DarkGray)
 
 
 
@@ -191,7 +196,7 @@ fun WeatherDetail(data:WeatherDTO) {
             Image(
                 painter = rememberAsyncImagePainter(model = "https:${data.current.condition.icon}".replace("64x64","128x128")),
                 contentDescription ="",
-                modifier = Modifier.size(100.dp,100.dp)
+                modifier = Modifier.size(150.dp,150.dp)
             )
 
             Spacer(modifier = Modifier.height(5.dp))
@@ -201,26 +206,64 @@ fun WeatherDetail(data:WeatherDTO) {
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center,
-                color = Color.Gray
+                color = Color.Black
             )
 
 
         }
 
-        Row(
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Card(
             modifier= Modifier
                 .fillMaxWidth()
-                .padding(10.dp),
-            horizontalArrangement = Arrangement.Center
+                .height(280.dp),
+            colors = CardDefaults.cardColors(Color.LightGray),
+            shape = RoundedCornerShape(10.dp)
         ){
 
-            Card(
+            Column(
+
                 modifier= Modifier
                     .fillMaxWidth()
-                    .height(360.dp),
-                colors = CardDefaults.cardColors(Color.Gray),
-                shape = RoundedCornerShape(10.dp)
+                    .height(280.dp)
+                    .padding(horizontal = 10.dp, vertical = 10.dp),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.CenterHorizontally
             ){
+
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(15.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+
+                    feature(value = "Humidity", feature = data.current.humidity.toString())
+                    feature(value ="Wind Kph", feature = data.current.wind_kph.toString())
+
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(15.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+
+                    feature(value = "Cloud", feature = data.current.cloud.toString()+"%")
+                    feature(value ="Local Time", feature = data.location.localtime.replace("2024-12-12",""))
+
+                }
+
+
+
+
+
+
 
 
             }
@@ -230,4 +273,23 @@ fun WeatherDetail(data:WeatherDTO) {
 
     }
 
+}
+
+@Composable
+fun feature(value:String,feature:String) {
+
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+
+    ){
+
+        Text(text = value, fontSize = 25.sp, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+        Text(text = feature, fontSize = 20.sp, textAlign = TextAlign.Center, fontWeight = FontWeight.SemiBold)
+
+
+    }
+
+
+    
 }
